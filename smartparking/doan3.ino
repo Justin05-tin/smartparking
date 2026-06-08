@@ -10,7 +10,6 @@
 #define BUZZER_PIN A0
 #define LED_PIN 7
 
-// Cảm biến hồng ngoại 3 vị trí
 #define IR_SENSOR_1 4
 #define IR_SENSOR_2 5
 #define IR_SENSOR_3 6
@@ -20,8 +19,8 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 Servo servo;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-int availableSlots = 3;  // Chỉ thay đổi khi quẹt thẻ
-String parkedRFIDs[3] = {"", "", ""};  // Lưu ID xe trong bãi
+int availableSlots = 3;  
+String parkedRFIDs[3] = {"", "", ""};  
 
 void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);  
@@ -50,9 +49,9 @@ void setup() {
 
 void loop() {
    if (digitalRead(BUTTON_PIN) == LOW) {
-        servo.write(90); // Mở cổng
+        servo.write(90); 
     } else {
-        servo.write(0);  // Đóng cổng
+        servo.write(0);  
     }
     
  
@@ -68,8 +67,7 @@ void loop() {
         int index = findRFID(rfid);
 
         if (index != -1) {
-            // 🚗 Xe rời bãi → availableSlots +1
-            parkedRFIDs[index] = "";  
+             parkedRFIDs[index] = "";  
             availableSlots = min(availableSlots + 1, 3);  
             servo.write(90);  
 
@@ -99,7 +97,7 @@ void loop() {
             }
         }
         else {
-            // ❌ Khi bãi đầy
+         
             lcd.clear();
             lcd.setCursor(0, 0);
             lcd.print("Full slot!");
@@ -116,7 +114,6 @@ void loop() {
     delay(500);
 }
 
-// 📺 Hiển thị trạng thái bãi đỗ dựa vào cảm biến hồng ngoại
 void displayParkingStatus() {
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -139,7 +136,7 @@ void displayAvailableSlots() {
     delay(2000);
 }
 
-// 🔎 Tìm RFID trong danh sách xe đã đỗ
+
 int findRFID(String rfid) {
     for (int i = 0; i < 3; i++) {
         if (parkedRFIDs[i] == rfid) {
@@ -149,7 +146,6 @@ int findRFID(String rfid) {
     return -1;
 }
 
-// 🔍 Tìm vị trí trống để lưu RFID khi xe vào
 int findEmptySlot() {
     for (int i = 0; i < 3; i++) {
         if (parkedRFIDs[i] == "") {
@@ -159,7 +155,7 @@ int findEmptySlot() {
     return -1;
 }
 
-// 🏷️ Lấy RFID từ thẻ quẹt
+
 String getRFID() {
     String rfid = "";
     for (byte i = 0; i < mfrc522.uid.size; i++) {
@@ -170,14 +166,13 @@ String getRFID() {
     return rfid;
 }
 
-// 📢 Còi báo hiệu ngắn
 void buzzBuzzer(unsigned int duration) {
     digitalWrite(BUZZER_PIN, HIGH);
     delay(duration);
     digitalWrite(BUZZER_PIN, LOW);
 }
 
-// 🔊 Còi kêu 2 lần
+
 void buzzBuzzerTwice() {
     for (int i = 0; i < 2; i++) {
         digitalWrite(BUZZER_PIN, HIGH);
@@ -187,7 +182,6 @@ void buzzBuzzerTwice() {
     }
 }
 
-// 🔊 Còi kêu dài khi bãi đầy
 void buzzBuzzerLong() {
     digitalWrite(BUZZER_PIN, HIGH);
     delay(1500);  // Kêu 1.5 giây
